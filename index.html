@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auru — 型染めレザー / サイトモック v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Shippori+Mincho:wght@400;500;600&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --shiro:  #FAF8F4;   /* 白に近い生成り */
+    --neri:   #F0EBE0;   /* 生成り */
+    --neri2:  #E5DDD0;   /* 生成り・濃 */
+    --ai:     #1E3145;   /* 藍 */
+    --ai2:    #2A4260;   /* 藍・やや明 */
+    --ai-pale:#EEF2F6;   /* 藍・極薄 */
+    --sumi:   #2C2820;   /* 墨 */
+    --cha:    #7A6A58;   /* 茶 */
+    --cha2:   #A89880;   /* 茶・薄 */
+    --white:  #FFFFFF;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Serif JP', serif;
+    background: var(--shiro);
+    color: var(--sumi);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* 微細なテクスチャ */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9000; opacity: 0.7;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    position: fixed; width: 6px; height: 6px;
+    background: var(--ai); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .25s, height .25s, background .25s, opacity .25s;
+  }
+  .cursor.grow { width: 24px; height: 24px; background: var(--cha2); opacity: .5; }
+
+  /* ── MOCK BAR ── */
+  .mock-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 8000;
+    background: var(--sumi); color: rgba(240,235,224,.6);
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .18em;
+    text-align: center; padding: 7px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 28px; left: 0; right: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 60px; transition: background .4s;
+  }
+  nav.solid {
+    background: rgba(250,248,244,.97);
+    border-bottom: 1px solid rgba(44,40,32,.07);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400;
+    letter-spacing: .32em; color: var(--ai); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-family: 'Noto Serif JP', serif; font-size: 12px; font-weight: 300;
+    letter-spacing: .14em; color: var(--sumi); text-decoration: none; opacity: .6;
+    transition: opacity .2s;
+  }
+  .nav-links a:hover { opacity: 1; }
+  .nav-store {
+    font-family: 'Noto Serif JP', serif; font-size: 11px; font-weight: 300;
+    letter-spacing: .18em; color: var(--ai); text-decoration: none;
+    border-bottom: 1px solid var(--ai); padding-bottom: 2px; transition: opacity .2s;
+  }
+  .nav-store:hover { opacity: .6; }
+
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s, transform 1s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .d1 { transition-delay: .2s; }
+  .d2 { transition-delay: .4s; }
+  .d3 { transition-delay: .6s; }
+
+  /* ── PLACEHOLDER ── */
+  .ph {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    position: relative;
+  }
+  .ph-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .2em;
+    text-transform: uppercase; opacity: .4;
+  }
+  .ph-note {
+    font-family: 'Noto Serif JP', serif; font-size: 10px; font-weight: 300;
+    letter-spacing: .08em; opacity: .3; text-align: center; line-height: 1.9;
+  }
+
+  /* ══════════════════
+     HERO
+  ══════════════════ */
+  .hero {
+    min-height: 100vh;
+    padding-top: 28px;
+    display: grid;
+    grid-template-columns: 55% 45%;
+  }
+
+  .hero-img {
+    background: var(--neri2);
+    position: relative; overflow: hidden;
+  }
+  .hero-img-inner {
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #D8D0C0 0%, #C0B498 50%, #A89070 100%);
+  }
+  /* 和の型染め風 SVG パターン — 控えめ */
+  .hero-pattern {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: .06;
+  }
+
+  .hero-text {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 72px 80px 64px;
+    background: var(--shiro);
+  }
+
+  .hero-sub-en {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; font-weight: 300;
+    letter-spacing: .35em; text-transform: uppercase; color: var(--cha2);
+    margin-bottom: 48px;
+  }
+
+  .hero-h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(28px, 3.2vw, 46px);
+    font-weight: 400; line-height: 1.9;
+    letter-spacing: .1em; color: var(--ai);
+    margin-bottom: 48px;
+  }
+
+  .hero-poem {
+    font-size: 13px; line-height: 2.6; color: var(--cha);
+    font-weight: 300; letter-spacing: .08em;
+    max-width: 320px; margin-bottom: 64px;
+    border-left: 1px solid var(--neri2); padding-left: 24px;
+  }
+
+  .hero-link {
+    font-family: 'Noto Serif JP', serif; font-size: 12px; font-weight: 300;
+    letter-spacing: .2em; color: var(--ai); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 16px; transition: gap .3s;
+  }
+  .hero-link::after { content: '→'; font-size: 14px; transition: transform .3s; }
+  .hero-link:hover { gap: 24px; }
+  .hero-link:hover::after { transform: translateX(4px); }
+
+  /* scroll hint */
+  .scroll-hint {
+    position: absolute; bottom: 40px; right: 40px;
+    writing-mode: vertical-rl;
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .25em;
+    text-transform: uppercase; color: rgba(44,40,32,.3);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .scroll-hint::after {
+    content: ''; width: 1px; height: 40px;
+    background: rgba(44,40,32,.2); display: block;
+    animation: scroll-line 2s ease-in-out infinite;
+  }
+  @keyframes scroll-line {
+    0%, 100% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+  }
+
+  /* ══════════════════
+     INTRO テキスト
+  ══════════════════ */
+  .intro {
+    padding: 140px 60px;
+    text-align: center;
+    background: var(--shiro);
+  }
+  .intro-text {
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(15px, 2vw, 20px);
+    font-weight: 400; line-height: 2.6; letter-spacing: .12em;
+    color: var(--ai); max-width: 640px; margin: 0 auto;
+  }
+  .intro-text em {
+    font-style: normal;
+    display: block; margin-top: 32px;
+    font-size: .75em; color: var(--cha); font-weight: 300; letter-spacing: .15em;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* ══════════════════
+     CRAFT（工程）— 横並び大写真
+  ══════════════════ */
+  .craft {
+    padding: 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: var(--neri);
+  }
+  .craft-img {
+    aspect-ratio: 4/5;
+    background: #C8C0B0;
+    position: relative; overflow: hidden;
+  }
+  .craft-body {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 72px;
+  }
+  .craft-num {
+    font-family: 'Cormorant Garamond', serif; font-size: 80px; font-weight: 300;
+    color: rgba(44,40,32,.07); line-height: 1; margin-bottom: 32px;
+    letter-spacing: -.02em;
+  }
+  .craft-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--cha2); margin-bottom: 16px;
+  }
+  .craft-title {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(20px, 2.5vw, 32px);
+    font-weight: 400; line-height: 1.7; letter-spacing: .08em;
+    color: var(--ai); margin-bottom: 28px;
+  }
+  .craft-body p {
+    font-size: 13px; line-height: 2.4; color: var(--cha); font-weight: 300;
+    letter-spacing: .06em; max-width: 360px;
+  }
+
+  /* ══════════════════
+     PATTERNS（柄）
+  ══════════════════ */
+  .patterns {
+    padding: 160px 60px; background: var(--shiro);
+  }
+  .patterns-intro {
+    text-align: center; margin-bottom: 100px;
+  }
+  .patterns-intro .section-en {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .35em;
+    text-transform: uppercase; color: var(--cha2); margin-bottom: 28px; display: block;
+  }
+  .patterns-intro h2 {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(22px, 3vw, 36px);
+    font-weight: 400; line-height: 1.8; letter-spacing: .1em; color: var(--ai);
+    margin-bottom: 28px;
+  }
+  .patterns-intro p {
+    font-size: 13px; line-height: 2.4; color: var(--cha); font-weight: 300;
+    letter-spacing: .06em; max-width: 480px; margin: 0 auto;
+  }
+
+  .patterns-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+  .pat-item { position: relative; overflow: hidden; cursor: pointer; }
+  .pat-item:hover .pat-overlay { opacity: 1; }
+  .pat-img { aspect-ratio: 1/1; }
+  .pat-overlay {
+    position: absolute; inset: 0;
+    background: rgba(30,49,69,.78); backdrop-filter: blur(2px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .4s;
+    gap: 10px; padding: 24px;
+  }
+  .pat-overlay-name {
+    font-family: 'Shippori Mincho', serif; font-size: 18px; font-weight: 500;
+    color: var(--neri); letter-spacing: .1em;
+  }
+  .pat-overlay-en {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .25em;
+    text-transform: uppercase; color: rgba(240,235,224,.5);
+  }
+  .pat-overlay-desc {
+    font-size: 11px; line-height: 2; color: rgba(240,235,224,.6);
+    font-weight: 300; letter-spacing: .06em; text-align: center; margin-top: 8px;
+  }
+
+  .patterns-more {
+    text-align: center; margin-top: 64px;
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--cha2);
+    display: block; opacity: .7;
+  }
+
+  /* ══════════════════
+     PRODUCTS
+  ══════════════════ */
+  .products {
+    padding: 160px 60px; background: var(--neri);
+  }
+  .products-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 80px;
+  }
+  .products-header h2 {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(22px, 3vw, 36px);
+    font-weight: 400; line-height: 1.7; letter-spacing: .1em; color: var(--ai);
+  }
+  .products-header .en {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .35em;
+    text-transform: uppercase; color: var(--cha2); display: block; margin-bottom: 16px;
+  }
+
+  .prod-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+  }
+  .prod-card { background: var(--shiro); transition: box-shadow .3s; }
+  .prod-card:hover { box-shadow: 0 8px 40px rgba(44,40,32,.1); }
+  .prod-card:hover .prod-img-wrap { filter: brightness(.96); }
+  .prod-img-wrap {
+    aspect-ratio: 3/4; overflow: hidden; transition: filter .4s;
+  }
+  .prod-img-inner {
+    width: 100%; height: 100%; transition: transform .6s ease;
+  }
+  .prod-card:hover .prod-img-inner { transform: scale(1.03); }
+  .prod-body { padding: 20px 20px 24px; }
+  .prod-name {
+    font-family: 'Shippori Mincho', serif; font-size: 15px; font-weight: 500;
+    color: var(--sumi); margin-bottom: 6px; letter-spacing: .06em;
+  }
+  .prod-pat { font-size: 11px; color: var(--cha2); font-weight: 300; margin-bottom: 10px; letter-spacing: .06em; }
+  .prod-price {
+    font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400;
+    color: var(--ai); letter-spacing: .08em;
+  }
+
+  /* ══════════════════
+     STORY（ブランドストーリー）
+  ══════════════════ */
+  .story {
+    display: grid; grid-template-columns: 45% 55%;
+    background: var(--ai);
+    min-height: 80vh;
+  }
+  .story-img {
+    background: var(--ai2); position: relative; overflow: hidden;
+  }
+  .story-body {
+    padding: 100px 72px; display: flex; flex-direction: column; justify-content: center;
+  }
+  .story-label {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .35em;
+    text-transform: uppercase; color: rgba(240,235,224,.4); margin-bottom: 40px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .story-label::before { content: ''; width: 24px; height: 1px; background: rgba(240,235,224,.3); }
+  .story-h2 {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(22px, 2.8vw, 36px);
+    font-weight: 400; line-height: 1.9; letter-spacing: .1em;
+    color: var(--neri); margin-bottom: 40px;
+  }
+  .story-text {
+    font-size: 13px; line-height: 2.6; color: rgba(240,235,224,.6);
+    font-weight: 300; letter-spacing: .06em; max-width: 400px;
+    margin-bottom: 48px;
+  }
+  .story-link {
+    font-family: 'Noto Serif JP', serif; font-size: 12px; font-weight: 300;
+    letter-spacing: .2em; color: rgba(240,235,224,.5); text-decoration: none;
+    border-bottom: 1px solid rgba(240,235,224,.2); padding-bottom: 2px;
+    display: inline-block; transition: color .2s, border-color .2s;
+  }
+  .story-link:hover { color: var(--neri); border-color: rgba(240,235,224,.5); }
+
+  /* ══════════════════
+     ARTISANS
+  ══════════════════ */
+  .artisans {
+    padding: 160px 60px; background: var(--shiro);
+  }
+  .artisans-header { text-align: center; margin-bottom: 100px; }
+  .artisans-header span {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .35em;
+    text-transform: uppercase; color: var(--cha2); display: block; margin-bottom: 24px;
+  }
+  .artisans-header h2 {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(20px, 2.8vw, 34px);
+    font-weight: 400; line-height: 1.8; letter-spacing: .1em; color: var(--ai);
+  }
+  .artisans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+  .artisan { display: grid; grid-template-columns: 180px 1fr; gap: 40px; align-items: start; }
+  .artisan-photo-wrap { position: relative; }
+  .artisan-photo {
+    width: 100%; aspect-ratio: 3/4;
+    background: var(--neri2);
+  }
+  .artisan-info {}
+  .artisan-role {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--cha2); margin-bottom: 12px;
+  }
+  .artisan-name {
+    font-family: 'Shippori Mincho', serif; font-size: 22px; font-weight: 500;
+    color: var(--ai); margin-bottom: 4px; letter-spacing: .08em;
+  }
+  .artisan-name-en {
+    font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 300;
+    letter-spacing: .2em; color: var(--cha2); margin-bottom: 24px;
+    font-style: italic;
+  }
+  .artisan-body {
+    font-size: 12px; line-height: 2.3; color: var(--cha); font-weight: 300;
+    letter-spacing: .06em;
+  }
+
+  /* ══════════════════
+     CONTACT
+  ══════════════════ */
+  .contact {
+    padding: 160px 60px; background: var(--neri);
+    text-align: center;
+  }
+  .contact-en {
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .35em;
+    text-transform: uppercase; color: var(--cha2); display: block; margin-bottom: 28px;
+  }
+  .contact-h2 {
+    font-family: 'Shippori Mincho', serif; font-size: clamp(20px, 2.8vw, 34px);
+    font-weight: 400; line-height: 1.8; letter-spacing: .1em; color: var(--ai);
+    margin-bottom: 28px;
+  }
+  .contact-text {
+    font-size: 13px; line-height: 2.4; color: var(--cha); font-weight: 300;
+    letter-spacing: .08em; max-width: 480px; margin: 0 auto 64px;
+  }
+  .contact-form {
+    max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
+    text-align: left;
+  }
+  .contact-select, .contact-input, .contact-textarea {
+    width: 100%; padding: 14px 18px;
+    background: var(--shiro); border: 1px solid rgba(44,40,32,.15);
+    color: var(--sumi); font-family: 'Noto Serif JP', serif; font-size: 12px;
+    font-weight: 300; letter-spacing: .08em; appearance: none; outline: none;
+    transition: border-color .2s;
+  }
+  .contact-select:focus, .contact-input:focus, .contact-textarea:focus {
+    border-color: var(--ai);
+  }
+  .contact-input::placeholder { color: rgba(44,40,32,.3); }
+  .contact-textarea { height: 100px; resize: none; }
+  .contact-select option { background: var(--shiro); }
+  .contact-btn {
+    padding: 15px; background: var(--ai); color: var(--neri); border: none;
+    font-family: 'Noto Serif JP', serif; font-size: 12px; font-weight: 300;
+    letter-spacing: .25em; cursor: pointer; margin-top: 4px; transition: background .2s;
+  }
+  .contact-btn:hover { background: var(--ai2); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 60px 40px; background: var(--sumi);
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    border-top: 1px solid rgba(240,235,224,.06);
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400;
+    letter-spacing: .32em; color: rgba(240,235,224,.8);
+  }
+  .footer-center {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .footer-tagline {
+    font-family: 'Noto Serif JP', serif; font-size: 11px; font-weight: 300;
+    letter-spacing: .15em; color: rgba(240,235,224,.35); text-align: center;
+  }
+  .footer-links {
+    display: flex; gap: 28px;
+  }
+  .footer-links a {
+    font-family: 'Noto Serif JP', serif; font-size: 10px; font-weight: 300;
+    letter-spacing: .15em; color: rgba(240,235,224,.3); text-decoration: none;
+    transition: color .2s;
+  }
+  .footer-links a:hover { color: rgba(240,235,224,.7); }
+  .footer-copy {
+    font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: .12em;
+    color: rgba(240,235,224,.2); text-align: right;
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 960px) {
+    nav { padding: 16px 28px; }
+    nav .nav-links, nav .nav-store { display: none; }
+    .hero, .craft, .story { grid-template-columns: 1fr; }
+    .craft-img { aspect-ratio: 4/3; }
+    .patterns-grid { grid-template-columns: repeat(2,1fr); }
+    .prod-grid { grid-template-columns: repeat(2,1fr); }
+    .artisans-grid { grid-template-columns: 1fr; gap: 60px; }
+    .artisan { grid-template-columns: 120px 1fr; }
+    .hero-text, .craft-body, .story-body { padding: 60px 32px; }
+    .intro, .patterns, .products, .artisans, .contact { padding: 80px 32px; }
+    footer { grid-template-columns: 1fr; gap: 24px; text-align: center; padding: 40px 32px; }
+    .footer-copy { text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+
+<!-- MOCK BAR -->
+<div class="mock-bar">Auru — ブランドサイト モック v2 ／ 2026-04-14 ／ ヴェールポイントMTG用（13:00）</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">Auru</a>
+  <ul class="nav-links">
+    <li><a href="#">ブランドについて</a></li>
+    <li><a href="#">型染めの柄</a></li>
+    <li><a href="#">プロダクト</a></li>
+    <li><a href="#">職人について</a></li>
+  </ul>
+  <a class="nav-store" href="#">オンラインストア</a>
+</nav>
+
+
+<!-- ══════════════════
+     HERO
+══════════════════ -->
+<div class="hero">
+
+  <!-- 左：写真 -->
+  <div class="hero-img">
+    <div class="hero-img-inner ph" style="height:100%;">
+      <svg class="hero-pattern" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+        <defs>
+          <pattern id="katazome" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+            <circle cx="50" cy="50" r="20" fill="none" stroke="#1E3145" stroke-width="0.5"/>
+            <path d="M50,20 Q60,35 50,50 Q40,35 50,20" fill="none" stroke="#1E3145" stroke-width="0.5"/>
+            <path d="M50,80 Q60,65 50,50 Q40,65 50,80" fill="none" stroke="#1E3145" stroke-width="0.5"/>
+            <path d="M20,50 Q35,60 50,50 Q35,40 20,50" fill="none" stroke="#1E3145" stroke-width="0.5"/>
+            <path d="M80,50 Q65,60 50,50 Q65,40 80,50" fill="none" stroke="#1E3145" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#katazome)"/>
+      </svg>
+      <div style="z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <div class="ph-label">Photo Placeholder</div>
+        <div class="ph-note" style="color:rgba(44,40,32,.35);">
+          型染めレザーのマクロ写真<br>
+          または工房・職人の手元カット<br>
+          （5月撮影：宮下直樹氏）
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </div>
+
+  <!-- 右：テキスト -->
+  <div class="hero-text">
+    <p class="hero-sub-en reveal">Katazome Leather — Handmade in Japan</p>
+    <h1 class="hero-h1 reveal d1">
+      染める人がいて、<br>
+      仕立てる人がいて、<br>
+      使う人がいる。
+    </h1>
+    <p class="hero-poem reveal d2">
+      伝統の型染めが革に宿る。<br>
+      日常に寄り添う、<br>
+      小さくて美しいもの。
+    </p>
+    <a class="hero-link reveal d3" href="#">プロダクトを見る</a>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════
+     INTRO
+══════════════════ -->
+<div class="intro">
+  <p class="intro-text reveal">
+    飯塚さんが型を彫り、藍で染める。<br>
+    佐藤さんが革に仕立てる。<br>
+    ふたりの手を経て、ひとつのものができあがる。<br>
+    <em>Auru — 型染めレザーブランド</em>
+  </p>
+</div>
+
+
+<!-- ══════════════════
+     CRAFT（工程）
+══════════════════ -->
+
+<!-- 工程1 -->
+<div class="craft">
+  <div class="craft-img ph" style="background:linear-gradient(160deg,#D4CCB8,#B8A898);">
+    <div class="ph-label" style="font-size:10px; opacity:.4;">Photo — 型彫り</div>
+    <div class="ph-note" style="opacity:.3; font-size:10px;">飯塚氏が型紙を彫るシーン<br>手元・集中した表情</div>
+  </div>
+  <div class="craft-body">
+    <div class="craft-num">01</div>
+    <div class="craft-label">Katazome — 型染め</div>
+    <h2 class="craft-title">型紙に、<br>文様を彫る。</h2>
+    <p>飯塚さんが一枚一枚、型紙に文様を彫り込む。花と鳥、波と雨、まんまる菊——伝統の文様に込められた意味と、職人の手の記憶が重なる。</p>
+  </div>
+</div>
+
+<!-- 工程2 （写真左右反転） -->
+<div class="craft" style="background: var(--ai-pale);">
+  <div class="craft-body" style="background:var(--ai-pale);">
+    <div class="craft-num">02</div>
+    <div class="craft-label">Ai-zome — 藍染め</div>
+    <h2 class="craft-title">藍の色に、<br>浸す。</h2>
+    <p>防染のりを置いた革を、藍の染液に浸す。染め回数でかわる色の深さ。同じ柄でも、二枚と同じものはできない。そのわずかな差が、手染めの味になる。</p>
+  </div>
+  <div class="craft-img ph" style="background:linear-gradient(160deg,#1E3145,#2A4260);">
+    <div class="ph-label" style="font-size:10px; opacity:.3; color:var(--neri);">Photo — 藍染め</div>
+    <div class="ph-note" style="opacity:.25; font-size:10px; color:var(--neri);">革を染液に浸すシーン<br>深い藍の色合い</div>
+  </div>
+</div>
+
+<!-- 工程3 -->
+<div class="craft" style="background: var(--neri2);">
+  <div class="craft-img ph" style="background:linear-gradient(160deg,#A89880,#7A6858);">
+    <div class="ph-label" style="font-size:10px; opacity:.35; color:var(--shiro);">Photo — 革の仕立て</div>
+    <div class="ph-note" style="opacity:.3; font-size:10px; color:var(--shiro);">佐藤氏が革を縫うシーン<br>がま口の口金取り付け等</div>
+  </div>
+  <div class="craft-body" style="background:var(--neri2);">
+    <div class="craft-num">03</div>
+    <div class="craft-label">Leather — 革の仕立て</div>
+    <h2 class="craft-title">革に、<br>命を吹き込む。</h2>
+    <p>染め上がった革を、佐藤さんがプロダクトに仕立てる。がま口の口金、L字の縫い目、コインチャームの紐——細部に宿る誠実さが、Auruのものづくりです。</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════
+     PATTERNS
+══════════════════ -->
+<section class="patterns">
+  <div class="patterns-intro reveal">
+    <span class="section-en">9 Patterns</span>
+    <h2>9種類の文様、<br>9つの物語。</h2>
+    <p>飯塚さんが手で彫った型紙から生まれる9種類の文様。それぞれに縁起と意味が込められています。ホバーすると文様のストーリーが現れます。</p>
+  </div>
+
+  <div class="patterns-grid">
+
+    <div class="pat-item reveal">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#C8D4DC,#A0B8C8);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
+          <circle cx="50" cy="50" r="30" fill="none" stroke="#1E3145" stroke-width="1"/>
+          <path d="M50,20 Q65,35 50,50 Q35,35 50,20" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <path d="M50,80 Q65,65 50,50 Q35,65 50,80" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <path d="M20,50 Q35,65 50,50 Q35,35 20,50" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <path d="M80,50 Q65,65 50,50 Q65,35 80,50" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">花と鳥</div>
+        <div class="pat-overlay-en">Hana to Tori</div>
+        <div class="pat-overlay-desc">花の優雅さと、鳥の自由を一枚に。縁起よき生命の息吹。</div>
+      </div>
+    </div>
+
+    <div class="pat-item reveal d1">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#2A4260,#1E3145);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.12;">
+          <rect x="20" y="20" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
+          <rect x="55" y="20" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
+          <rect x="20" y="55" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
+          <rect x="55" y="55" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
+          <rect x="37" y="37" width="26" height="26" fill="rgba(240,235,224,.08)" stroke="#F0EBE0" stroke-width="0.8"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">変わり市松</div>
+        <div class="pat-overlay-en">Kawari Ichimatsu</div>
+        <div class="pat-overlay-desc">市松模様に独自の変形を。Auruならではの幾何学文様。</div>
+      </div>
+    </div>
+
+    <div class="pat-item reveal d2">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#D4C8B0,#B8A890);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
+          <circle cx="50" cy="50" r="25" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <circle cx="50" cy="50" r="16" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <circle cx="50" cy="50" r="8" fill="rgba(30,49,69,.08)" stroke="#1E3145" stroke-width="0.8"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">まんまる菊</div>
+        <div class="pat-overlay-en">Manmaru Kiku</div>
+        <div class="pat-overlay-desc">丸みを帯びた菊の文様。長寿と高潔さの象徴。</div>
+      </div>
+    </div>
+
+    <div class="pat-item reveal">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#1E3145,#3A5870);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.12;">
+          <path d="M10,40 Q25,20 40,40 Q55,60 70,40 Q85,20 100,40" fill="none" stroke="#F0EBE0" stroke-width="0.9"/>
+          <path d="M10,55 Q25,35 40,55 Q55,75 70,55 Q85,35 100,55" fill="none" stroke="#F0EBE0" stroke-width="0.5"/>
+          <line x1="30" y1="20" x2="30" y2="80" stroke="#F0EBE0" stroke-width="0.4"/>
+          <line x1="50" y1="15" x2="50" y2="85" stroke="#F0EBE0" stroke-width="0.4"/>
+          <line x1="70" y1="20" x2="70" y2="80" stroke="#F0EBE0" stroke-width="0.4"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">波と雨</div>
+        <div class="pat-overlay-en">Nami to Ame</div>
+        <div class="pat-overlay-desc">打ち寄せる波と、縦に流れる雨を重ねた情景。</div>
+      </div>
+    </div>
+
+    <div class="pat-item reveal d1">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#C0B8A8,#A8A090);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
+          <path d="M50,10 Q70,30 90,50 Q70,70 50,90 Q30,70 10,50 Q30,30 50,10" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+          <path d="M50,25 Q65,40 80,50 Q65,65 50,75 Q35,65 20,50 Q35,40 50,25" fill="rgba(30,49,69,.05)" stroke="#1E3145" stroke-width="0.6"/>
+          <circle cx="50" cy="50" r="10" fill="none" stroke="#1E3145" stroke-width="0.6"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">花のワルツ</div>
+        <div class="pat-overlay-en">Hana no Waltz</div>
+        <div class="pat-overlay-desc">ゆるやかに舞う花びらを型紙で表現。リズムと優雅さ。</div>
+      </div>
+    </div>
+
+    <div class="pat-item reveal d2">
+      <div class="pat-img ph" style="background:linear-gradient(160deg,#304858,#203848);">
+        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
+          <path d="M50,15 L85,35 L85,65 L50,85 L15,65 L15,35 Z" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
+          <path d="M50,28 L72,40 L72,60 L50,72 L28,60 L28,40 Z" fill="rgba(240,235,224,.05)" stroke="#F0EBE0" stroke-width="0.6"/>
+          <circle cx="50" cy="50" r="8" fill="none" stroke="#F0EBE0" stroke-width="0.6"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">模様合わせ</div>
+        <div class="pat-overlay-en">Moyou Awase</div>
+        <div class="pat-overlay-desc">複数の文様を組み合わせた、Auruの代表的な柄。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <span class="patterns-more reveal">他3種類の柄はオンラインストアでご覧いただけます →</span>
+</section>
+
+
+<!-- ══════════════════
+     PRODUCTS
+══════════════════ -->
+<section class="products">
+  <div class="products-header">
+    <div>
+      <span class="en">Products</span>
+      <h2>手に取る、<br>日々のもの。</h2>
+    </div>
+    <a href="#" style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;letter-spacing:.18em;color:var(--ai);text-decoration:none;border-bottom:1px solid var(--ai);padding-bottom:2px;">すべて見る</a>
+  </div>
+
+  <div class="prod-grid">
+
+    <div class="prod-card reveal">
+      <div class="prod-img-wrap">
+        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#C8D4DC,#A0B8C8); height:100%;">
+          <div class="ph-label" style="font-size:9px;">がま口 四角</div>
+          <div class="ph-note" style="font-size:9px;">5月撮影</div>
+        </div>
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">がま口 四角</div>
+        <div class="prod-pat">花と鳥 / 藍染め</div>
+        <div class="prod-price">¥18,000</div>
+      </div>
+    </div>
+
+    <div class="prod-card reveal d1">
+      <div class="prod-img-wrap">
+        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#2A4260,#1E3145); height:100%;">
+          <div class="ph-label" style="font-size:9px; color:var(--neri);">L字財布</div>
+          <div class="ph-note" style="font-size:9px; color:var(--neri);">5月撮影</div>
+        </div>
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">L字ファスナー財布</div>
+        <div class="prod-pat">変わり市松 / 藍染め</div>
+        <div class="prod-price">¥22,000</div>
+      </div>
+    </div>
+
+    <div class="prod-card reveal d2">
+      <div class="prod-img-wrap">
+        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#D4CCB8,#B8A898); height:100%;">
+          <div class="ph-label" style="font-size:9px;">トレー</div>
+          <div class="ph-note" style="font-size:9px;">5月撮影</div>
+        </div>
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">レザートレー</div>
+        <div class="prod-pat">まんまる菊 / 藍染め</div>
+        <div class="prod-price">¥12,000</div>
+      </div>
+    </div>
+
+    <div class="prod-card reveal d3">
+      <div class="prod-img-wrap">
+        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#A89880,#7A6858); height:100%;">
+          <div class="ph-label" style="font-size:9px; color:var(--shiro);">コインチャーム</div>
+          <div class="ph-note" style="font-size:9px; color:var(--shiro);">5月撮影</div>
+        </div>
+      </div>
+      <div class="prod-body">
+        <div class="prod-name">三角コインチャーム</div>
+        <div class="prod-pat">花のワルツ / 共革ストラップ付</div>
+        <div class="prod-price">¥6,500</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════
+     STORY
+══════════════════ -->
+<div class="story">
+  <div class="story-img ph" style="min-height:500px;">
+    <div class="ph-label" style="color:rgba(240,235,224,.35); font-size:10px;">Photo — 工房</div>
+    <div class="ph-note" style="color:rgba(240,235,224,.25); font-size:10px;">工房リニューアル後の写真<br>（4/25リニューアルオープン）</div>
+  </div>
+  <div class="story-body">
+    <div class="story-label reveal">Brand Story</div>
+    <h2 class="story-h2 reveal d1">
+      暮らしの中に、<br>
+      美しいものが<br>
+      在ればいい。
+    </h2>
+    <p class="story-text reveal d2">
+      型染め職人・飯塚さんの工房と、革職人・佐藤さんの工房。<br>
+      ふたりが出会い、Auruは生まれました。<br><br>
+      使うほどに手に馴染む革と、<br>
+      色褪せることなく深まる藍。<br>
+      長く使えるものを、ひとつひとつ。
+    </p>
+    <a class="story-link reveal d3" href="#">ブランドストーリーをすべて読む</a>
+  </div>
+</div>
+
+
+<!-- ══════════════════
+     ARTISANS
+══════════════════ -->
+<section class="artisans">
+  <div class="artisans-header reveal">
+    <span>The Artisans</span>
+    <h2>つくる人たちのこと。</h2>
+  </div>
+
+  <div class="artisans-grid">
+
+    <div class="artisan reveal d1">
+      <div class="artisan-photo-wrap">
+        <div class="artisan-photo ph">
+          <div class="ph-label" style="font-size:9px;">Photo<br>5月撮影</div>
+        </div>
+      </div>
+      <div class="artisan-info">
+        <div class="artisan-role">Katazome Artist</div>
+        <div class="artisan-name">飯塚 氏</div>
+        <div class="artisan-name-en">Iizuka</div>
+        <div class="artisan-body">
+          花と鳥、波と雨——伝統の文様を手彫りし、藍の染液で革に命を吹き込む。工房は4月25日にリニューアルオープン。ワークショップも開催予定。
+        </div>
+      </div>
+    </div>
+
+    <div class="artisan reveal d2">
+      <div class="artisan-photo-wrap">
+        <div class="artisan-photo ph">
+          <div class="ph-label" style="font-size:9px;">Photo<br>5月撮影</div>
+        </div>
+      </div>
+      <div class="artisan-info">
+        <div class="artisan-role">Leather Craftsman</div>
+        <div class="artisan-name">佐藤 氏</div>
+        <div class="artisan-name-en">Sato</div>
+        <div class="artisan-body">
+          飯塚さんから届く型染めレザーを、がま口・財布・バッグへと仕立てる。細部の縫い目、口金の丸み——妥協のない手仕事が、Auruの品質を支えている。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════
+     CONTACT
+══════════════════ -->
+<div class="contact">
+  <span class="contact-en reveal">Contact</span>
+  <h2 class="contact-h2 reveal d1">
+    お問い合わせ、<br>お待ちしております。
+  </h2>
+  <p class="contact-text reveal d2">
+    プロダクトのご購入、卸・取り扱いのご相談、<br>
+    ワークショップのご依頼など、<br>
+    お気軽にご連絡ください。
+  </p>
+  <div class="contact-form reveal d2">
+    <select class="contact-select">
+      <option value="" disabled selected>お問い合わせの種類</option>
+      <option>プロダクトのご購入・ご注文</option>
+      <option>卸・取り扱いのご相談</option>
+      <option>ワークショップのご依頼</option>
+      <option>コラボレーション・企画のご提案</option>
+      <option>メディア・取材のご依頼</option>
+      <option>その他</option>
+    </select>
+    <input type="text" class="contact-input" placeholder="お名前">
+    <input type="email" class="contact-input" placeholder="メールアドレス">
+    <textarea class="contact-textarea" placeholder="ご用件をお聞かせください"></textarea>
+    <button class="contact-btn">送 信</button>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Auru</div>
+  <div class="footer-center">
+    <p class="footer-tagline">型染めレザー — 手仕事のものを、暮らしに。</p>
+    <div class="footer-links">
+      <a href="#">Instagram</a>
+      <a href="#">Online Store</a>
+      <a href="#">プライバシーポリシー</a>
+    </div>
+  </div>
+  <div class="footer-copy">© 2026 Auru / Vert Point</div>
+</footer>
+
+
+<script>
+  // cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.prod-card,.pat-item,.artisan').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+  });
+
+  // nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('solid', window.scrollY > 80);
+  });
+
+  // reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
