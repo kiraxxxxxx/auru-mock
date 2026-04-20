@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Auru — 型染めレザー / サイトモック v2</title>
+<title>Auru — 型染めレザー / Katazome Leather — Handmade in Japan</title>
+<meta name="description" content="筑波の型染め職人・飯塚氏と、東京舎人の革職人・佐藤氏。ふたりの手を経て生まれる、藍染めレザーのブランド Auru。">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Shippori+Mincho:wght@400;500;600&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -48,17 +49,11 @@
   }
   .cursor.grow { width: 24px; height: 24px; background: var(--cha2); opacity: .5; }
 
-  /* ── MOCK BAR ── */
-  .mock-bar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 8000;
-    background: var(--sumi); color: rgba(240,235,224,.6);
-    font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: .18em;
-    text-align: center; padding: 7px;
-  }
+  /* MOCK BAR: removed */
 
   /* ── NAV ── */
   nav {
-    position: fixed; top: 28px; left: 0; right: 0; z-index: 500;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
     display: flex; align-items: center; justify-content: space-between;
     padding: 24px 60px; transition: background .4s;
   }
@@ -111,7 +106,7 @@
   ══════════════════ */
   .hero {
     min-height: 100vh;
-    padding-top: 28px;
+    padding-top: 0;
     display: grid;
     grid-template-columns: 55% 45%;
   }
@@ -267,9 +262,31 @@
   .patterns-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
   }
-  .pat-item { position: relative; overflow: hidden; cursor: pointer; }
+  .pat-item { position: relative; overflow: hidden; cursor: pointer; background: var(--neri); }
   .pat-item:hover .pat-overlay { opacity: 1; }
-  .pat-img { aspect-ratio: 1/1; }
+  .pat-img {
+    aspect-ratio: 1/1;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--neri);
+    position: relative;
+  }
+  .pat-img::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(44,40,32,.03) 100%);
+    pointer-events: none;
+  }
+  .pat-svg {
+    width: 55%; height: 55%;
+    opacity: .55;
+  }
+  .pat-svg path, .pat-svg circle, .pat-svg rect, .pat-svg line, .pat-svg ellipse {
+    fill: none;
+    stroke: var(--ai);
+    stroke-width: 0.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pat-svg .fill-ai { fill: var(--ai); stroke: none; }
   .pat-overlay {
     position: absolute; inset: 0;
     background: rgba(30,49,69,.78); backdrop-filter: blur(2px);
@@ -338,6 +355,40 @@
   .prod-price {
     font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400;
     color: var(--ai); letter-spacing: .08em;
+  }
+
+  /* Products - hero + list 新レイアウト */
+  .products-hero {
+    margin-bottom: 64px;
+  }
+  .products-hero-img {
+    width: 100%;
+    aspect-ratio: 3/2;
+    background-color: var(--neri2);
+  }
+  .products-list {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
+    max-width: 960px; margin: 0 auto;
+    border-top: 1px solid rgba(44,40,32,.08);
+  }
+  .prod-row {
+    padding: 28px 32px;
+    border-bottom: 1px solid rgba(44,40,32,.08);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .prod-row:nth-child(odd) {
+    border-right: 1px solid rgba(44,40,32,.08);
+  }
+  .prod-row-name {
+    font-family: 'Shippori Mincho', serif; font-size: 15px; font-weight: 500;
+    color: var(--sumi); letter-spacing: .06em;
+  }
+  .prod-row-pat {
+    font-size: 11px; color: var(--cha2); font-weight: 300; letter-spacing: .06em;
+  }
+  .prod-row-price {
+    font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400;
+    color: var(--ai); letter-spacing: .08em; margin-top: 2px;
   }
 
   /* ══════════════════
@@ -417,6 +468,23 @@
   .artisan-body {
     font-size: 12px; line-height: 2.3; color: var(--cha); font-weight: 300;
     letter-spacing: .06em;
+  }
+  .artisan-ig {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 20px;
+    font-family: 'Cormorant Garamond', serif; font-size: 11px; font-weight: 400;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ai); text-decoration: none;
+    border-bottom: 1px solid rgba(30,49,69,.2); padding-bottom: 4px;
+    transition: color .2s, border-color .2s, gap .3s;
+  }
+  .artisan-ig:hover { color: var(--cha); border-color: var(--cha); gap: 14px; }
+  .artisan-ig::before {
+    content: ''; display: inline-block; width: 12px; height: 12px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.8'%3E%3Crect x='3' y='3' width='18' height='18' rx='5'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Ccircle cx='17.5' cy='6.5' r='1' fill='currentColor' stroke='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.8'%3E%3Crect x='3' y='3' width='18' height='18' rx='5'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Ccircle cx='17.5' cy='6.5' r='1' fill='currentColor' stroke='none'/%3E%3C/svg%3E") center/contain no-repeat;
+    opacity: .8;
   }
 
   /* ══════════════════
@@ -514,19 +582,16 @@
 <body>
 <div class="cursor" id="cursor"></div>
 
-<!-- MOCK BAR -->
-<div class="mock-bar">Auru — ブランドサイト モック v2 ／ 2026-04-14 ／ ヴェールポイントMTG用（13:00）</div>
-
 <!-- NAV -->
 <nav id="nav">
   <a class="nav-logo" href="#">Auru</a>
   <ul class="nav-links">
-    <li><a href="#">ブランドについて</a></li>
-    <li><a href="#">型染めの柄</a></li>
-    <li><a href="#">プロダクト</a></li>
-    <li><a href="#">職人について</a></li>
+    <li><a href="#intro">ブランドについて</a></li>
+    <li><a href="#patterns">型染めの柄</a></li>
+    <li><a href="#products">プロダクト</a></li>
+    <li><a href="#artisans">職人について</a></li>
   </ul>
-  <a class="nav-store" href="#">オンラインストア</a>
+  <a class="nav-store" href="#contact">お問い合わせ</a>
 </nav>
 
 
@@ -537,7 +602,7 @@
 
   <!-- 左：写真 -->
   <div class="hero-img">
-    <div class="hero-img-inner ph" style="height:100%;">
+    <div class="hero-img-inner" style="height:100%; background:url('images/hero_top.jpg') center/cover no-repeat;">
       <svg class="hero-pattern" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
         <defs>
           <pattern id="katazome" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
@@ -551,14 +616,6 @@
         </defs>
         <rect width="100%" height="100%" fill="url(#katazome)"/>
       </svg>
-      <div style="z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px;">
-        <div class="ph-label">Photo Placeholder</div>
-        <div class="ph-note" style="color:rgba(44,40,32,.35);">
-          型染めレザーのマクロ写真<br>
-          または工房・職人の手元カット<br>
-          （5月撮影：宮下直樹氏）
-        </div>
-      </div>
     </div>
     <div class="scroll-hint">Scroll</div>
   </div>
@@ -576,7 +633,7 @@
       日常に寄り添う、<br>
       小さくて美しいもの。
     </p>
-    <a class="hero-link reveal d3" href="#">プロダクトを見る</a>
+    <a class="hero-link reveal d3" href="#products">プロダクトを見る</a>
   </div>
 
 </div>
@@ -585,7 +642,7 @@
 <!-- ══════════════════
      INTRO
 ══════════════════ -->
-<div class="intro">
+<div class="intro" id="intro">
   <p class="intro-text reveal">
     飯塚さんが型を彫り、藍で染める。<br>
     佐藤さんが革に仕立てる。<br>
@@ -601,10 +658,7 @@
 
 <!-- 工程1 -->
 <div class="craft">
-  <div class="craft-img ph" style="background:linear-gradient(160deg,#D4CCB8,#B8A898);">
-    <div class="ph-label" style="font-size:10px; opacity:.4;">Photo — 型彫り</div>
-    <div class="ph-note" style="opacity:.3; font-size:10px;">飯塚氏が型紙を彫るシーン<br>手元・集中した表情</div>
-  </div>
+  <div class="craft-img" style="background:url('images/process_katazome.jpg') center/cover no-repeat;"></div>
   <div class="craft-body">
     <div class="craft-num">01</div>
     <div class="craft-label">Katazome — 型染め</div>
@@ -621,18 +675,12 @@
     <h2 class="craft-title">藍の色に、<br>浸す。</h2>
     <p>防染のりを置いた革を、藍の染液に浸す。染め回数でかわる色の深さ。同じ柄でも、二枚と同じものはできない。そのわずかな差が、手染めの味になる。</p>
   </div>
-  <div class="craft-img ph" style="background:linear-gradient(160deg,#1E3145,#2A4260);">
-    <div class="ph-label" style="font-size:10px; opacity:.3; color:var(--neri);">Photo — 藍染め</div>
-    <div class="ph-note" style="opacity:.25; font-size:10px; color:var(--neri);">革を染液に浸すシーン<br>深い藍の色合い</div>
-  </div>
+  <div class="craft-img" style="background:url('images/process_aizome.jpg') center/cover no-repeat;"></div>
 </div>
 
 <!-- 工程3 -->
 <div class="craft" style="background: var(--neri2);">
-  <div class="craft-img ph" style="background:linear-gradient(160deg,#A89880,#7A6858);">
-    <div class="ph-label" style="font-size:10px; opacity:.35; color:var(--shiro);">Photo — 革の仕立て</div>
-    <div class="ph-note" style="opacity:.3; font-size:10px; color:var(--shiro);">佐藤氏が革を縫うシーン<br>がま口の口金取り付け等</div>
-  </div>
+  <div class="craft-img" style="background:url('images/process_leather.jpg') center/cover no-repeat;"></div>
   <div class="craft-body" style="background:var(--neri2);">
     <div class="craft-num">03</div>
     <div class="craft-label">Leather — 革の仕立て</div>
@@ -645,187 +693,271 @@
 <!-- ══════════════════
      PATTERNS
 ══════════════════ -->
-<section class="patterns">
+<section class="patterns" id="patterns">
   <div class="patterns-intro reveal">
-    <span class="section-en">9 Patterns</span>
-    <h2>9種類の文様、<br>9つの物語。</h2>
-    <p>飯塚さんが手で彫った型紙から生まれる9種類の文様。それぞれに縁起と意味が込められています。ホバーすると文様のストーリーが現れます。</p>
+    <span class="section-en">7 Patterns</span>
+    <h2>7種類の文様、<br>7つの物語。</h2>
+    <p>飯塚さんが手で彫った型紙から生まれる7種類の文様。それぞれに縁起と意味が込められています。ホバーすると文様のストーリーが現れます。</p>
   </div>
 
   <div class="patterns-grid">
 
+    <!-- 1. 花と鳥 -->
     <div class="pat-item reveal">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#C8D4DC,#A0B8C8);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
-          <circle cx="50" cy="50" r="30" fill="none" stroke="#1E3145" stroke-width="1"/>
-          <path d="M50,20 Q65,35 50,50 Q35,35 50,20" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <path d="M50,80 Q65,65 50,50 Q35,65 50,80" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <path d="M20,50 Q35,65 50,50 Q35,35 20,50" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <path d="M80,50 Q65,65 50,50 Q65,35 80,50" fill="none" stroke="#1E3145" stroke-width="0.8"/>
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 花：中央の大輪 -->
+          <circle cx="50" cy="55" r="3"/>
+          <path d="M50 45 Q44 50 50 55 Q56 50 50 45 Z"/>
+          <path d="M50 65 Q44 60 50 55 Q56 60 50 65 Z"/>
+          <path d="M40 55 Q45 49 50 55 Q45 61 40 55 Z"/>
+          <path d="M60 55 Q55 49 50 55 Q55 61 60 55 Z"/>
+          <path d="M43 48 Q45 52 50 55 Q48 50 43 48 Z"/>
+          <path d="M57 48 Q55 52 50 55 Q52 50 57 48 Z"/>
+          <path d="M43 62 Q45 58 50 55 Q48 60 43 62 Z"/>
+          <path d="M57 62 Q55 58 50 55 Q52 60 57 62 Z"/>
+          <!-- 鳥：右上 -->
+          <path d="M70 30 Q75 25 82 28 Q80 32 75 33 Q73 34 70 30 Z"/>
+          <path d="M75 33 Q78 36 82 35"/>
+          <circle cx="79" cy="28" r="0.6" class="fill-ai"/>
+          <!-- 葉 -->
+          <path d="M25 70 Q30 68 32 74"/>
+          <path d="M32 74 Q30 80 25 78"/>
+          <path d="M72 72 Q78 70 80 76"/>
         </svg>
       </div>
       <div class="pat-overlay">
         <div class="pat-overlay-name">花と鳥</div>
-        <div class="pat-overlay-en">Hana to Tori</div>
-        <div class="pat-overlay-desc">花の優雅さと、鳥の自由を一枚に。縁起よき生命の息吹。</div>
+        <div class="pat-overlay-en">Flowers and Birds</div>
+        <div class="pat-overlay-desc">花は生命力と神聖さ、鳥は創造性と自由の象徴。「鳥」と「とりこむ」の語呂合わせで、幸運を取り込む縁起柄。</div>
       </div>
     </div>
 
+    <!-- 2. 模様合わせ -->
     <div class="pat-item reveal d1">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#2A4260,#1E3145);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.12;">
-          <rect x="20" y="20" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
-          <rect x="55" y="20" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
-          <rect x="20" y="55" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
-          <rect x="55" y="55" width="25" height="25" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
-          <rect x="37" y="37" width="26" height="26" fill="rgba(240,235,224,.08)" stroke="#F0EBE0" stroke-width="0.8"/>
-        </svg>
-      </div>
-      <div class="pat-overlay">
-        <div class="pat-overlay-name">変わり市松</div>
-        <div class="pat-overlay-en">Kawari Ichimatsu</div>
-        <div class="pat-overlay-desc">市松模様に独自の変形を。Auruならではの幾何学文様。</div>
-      </div>
-    </div>
-
-    <div class="pat-item reveal d2">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#D4C8B0,#B8A890);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
-          <circle cx="50" cy="50" r="25" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <circle cx="50" cy="50" r="16" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <circle cx="50" cy="50" r="8" fill="rgba(30,49,69,.08)" stroke="#1E3145" stroke-width="0.8"/>
-        </svg>
-      </div>
-      <div class="pat-overlay">
-        <div class="pat-overlay-name">まんまる菊</div>
-        <div class="pat-overlay-en">Manmaru Kiku</div>
-        <div class="pat-overlay-desc">丸みを帯びた菊の文様。長寿と高潔さの象徴。</div>
-      </div>
-    </div>
-
-    <div class="pat-item reveal">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#1E3145,#3A5870);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.12;">
-          <path d="M10,40 Q25,20 40,40 Q55,60 70,40 Q85,20 100,40" fill="none" stroke="#F0EBE0" stroke-width="0.9"/>
-          <path d="M10,55 Q25,35 40,55 Q55,75 70,55 Q85,35 100,55" fill="none" stroke="#F0EBE0" stroke-width="0.5"/>
-          <line x1="30" y1="20" x2="30" y2="80" stroke="#F0EBE0" stroke-width="0.4"/>
-          <line x1="50" y1="15" x2="50" y2="85" stroke="#F0EBE0" stroke-width="0.4"/>
-          <line x1="70" y1="20" x2="70" y2="80" stroke="#F0EBE0" stroke-width="0.4"/>
-        </svg>
-      </div>
-      <div class="pat-overlay">
-        <div class="pat-overlay-name">波と雨</div>
-        <div class="pat-overlay-en">Nami to Ame</div>
-        <div class="pat-overlay-desc">打ち寄せる波と、縦に流れる雨を重ねた情景。</div>
-      </div>
-    </div>
-
-    <div class="pat-item reveal d1">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#C0B8A8,#A8A090);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
-          <path d="M50,10 Q70,30 90,50 Q70,70 50,90 Q30,70 10,50 Q30,30 50,10" fill="none" stroke="#1E3145" stroke-width="0.8"/>
-          <path d="M50,25 Q65,40 80,50 Q65,65 50,75 Q35,65 20,50 Q35,40 50,25" fill="rgba(30,49,69,.05)" stroke="#1E3145" stroke-width="0.6"/>
-          <circle cx="50" cy="50" r="10" fill="none" stroke="#1E3145" stroke-width="0.6"/>
-        </svg>
-      </div>
-      <div class="pat-overlay">
-        <div class="pat-overlay-name">花のワルツ</div>
-        <div class="pat-overlay-en">Hana no Waltz</div>
-        <div class="pat-overlay-desc">ゆるやかに舞う花びらを型紙で表現。リズムと優雅さ。</div>
-      </div>
-    </div>
-
-    <div class="pat-item reveal d2">
-      <div class="pat-img ph" style="background:linear-gradient(160deg,#304858,#203848);">
-        <svg viewBox="0 0 100 100" width="60" style="opacity:.15;">
-          <path d="M50,15 L85,35 L85,65 L50,85 L15,65 L15,35 Z" fill="none" stroke="#F0EBE0" stroke-width="0.8"/>
-          <path d="M50,28 L72,40 L72,60 L50,72 L28,60 L28,40 Z" fill="rgba(240,235,224,.05)" stroke="#F0EBE0" stroke-width="0.6"/>
-          <circle cx="50" cy="50" r="8" fill="none" stroke="#F0EBE0" stroke-width="0.6"/>
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 左上：市松 -->
+          <rect x="15" y="15" width="10" height="10" class="fill-ai" opacity="0.7"/>
+          <rect x="25" y="25" width="10" height="10" class="fill-ai" opacity="0.7"/>
+          <!-- 右上：花の四分の一 -->
+          <path d="M60 15 Q75 15 75 30"/>
+          <path d="M63 15 Q72 18 72 27"/>
+          <path d="M66 15 Q69 20 69 25"/>
+          <!-- 左下：波 -->
+          <path d="M15 65 Q22 60 28 65 Q34 70 40 65"/>
+          <path d="M15 72 Q22 67 28 72 Q34 77 40 72"/>
+          <path d="M15 79 Q22 74 28 79 Q34 84 40 79"/>
+          <!-- 右下：菊の一部 -->
+          <circle cx="72" cy="72" r="10"/>
+          <line x1="72" y1="62" x2="72" y2="82"/>
+          <line x1="62" y1="72" x2="82" y2="72"/>
+          <line x1="65" y1="65" x2="79" y2="79"/>
+          <line x1="65" y1="79" x2="79" y2="65"/>
+          <!-- 中央：小点でつなぐ -->
+          <circle cx="50" cy="50" r="1" class="fill-ai"/>
         </svg>
       </div>
       <div class="pat-overlay">
         <div class="pat-overlay-name">模様合わせ</div>
-        <div class="pat-overlay-en">Moyou Awase</div>
-        <div class="pat-overlay-desc">複数の文様を組み合わせた、Auruの代表的な柄。</div>
+        <div class="pat-overlay-en">Pattern Matching</div>
+        <div class="pat-overlay-desc">自然をモチーフにした伝統文様を集めた異国情緒のある柄。沖縄の紅型にも通じる、神秘的な美しさ。</div>
+      </div>
+    </div>
+
+    <!-- 3. 花のワルツ -->
+    <div class="pat-item reveal d2">
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 蔓のうねり -->
+          <path d="M15 50 Q30 30 50 50 Q70 70 85 50"/>
+          <path d="M15 55 Q30 35 50 55 Q70 75 85 55" opacity="0.5"/>
+          <!-- 小花 -->
+          <circle cx="25" cy="42" r="3"/>
+          <circle cx="25" cy="42" r="1" class="fill-ai"/>
+          <circle cx="50" cy="50" r="4"/>
+          <circle cx="50" cy="50" r="1.5" class="fill-ai"/>
+          <circle cx="75" cy="58" r="3"/>
+          <circle cx="75" cy="58" r="1" class="fill-ai"/>
+          <!-- 小さな葉 -->
+          <path d="M35 38 Q38 36 40 40"/>
+          <path d="M60 48 Q63 46 65 50"/>
+          <path d="M42 62 Q45 64 43 67"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">花のワルツ</div>
+        <div class="pat-overlay-en">Waltz of the Flowers</div>
+        <div class="pat-overlay-desc">蔓は繁栄と子孫繁栄の象徴。絡み合いながら伸びる姿は、人と人との「縁」が長く続いていくことを表す。</div>
+      </div>
+    </div>
+
+    <!-- 4. まんまる菊 -->
+    <div class="pat-item reveal">
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 放射状の花弁 -->
+          <g transform="translate(50,50)">
+            <ellipse cx="0" cy="-22" rx="4" ry="10"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(30)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(60)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(90)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(120)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(150)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(180)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(210)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(240)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(270)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(300)"/>
+            <ellipse cx="0" cy="-22" rx="4" ry="10" transform="rotate(330)"/>
+          </g>
+          <!-- 中心 -->
+          <circle cx="50" cy="50" r="6"/>
+          <circle cx="50" cy="50" r="2" class="fill-ai"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">まんまる菊</div>
+        <div class="pat-overlay-en">Round Chrysanthemums</div>
+        <div class="pat-overlay-desc">皇室の紋章にも使われ「信頼」「高貴さ」を意味する菊。薬効と美しさから「不老長寿」の象徴でもある。</div>
+      </div>
+    </div>
+
+    <!-- 5. 波と雨 -->
+    <div class="pat-item reveal d1">
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 立湧：2本の膨らみ曲線 -->
+          <path d="M25 10 Q15 30 25 50 Q35 70 25 90"/>
+          <path d="M50 10 Q40 30 50 50 Q60 70 50 90"/>
+          <path d="M75 10 Q65 30 75 50 Q85 70 75 90"/>
+          <!-- 雨の縦線 -->
+          <line x1="37" y1="20" x2="37" y2="35" stroke-dasharray="2,3"/>
+          <line x1="37" y1="45" x2="37" y2="60" stroke-dasharray="2,3"/>
+          <line x1="37" y1="70" x2="37" y2="85" stroke-dasharray="2,3"/>
+          <line x1="62" y1="20" x2="62" y2="35" stroke-dasharray="2,3"/>
+          <line x1="62" y1="45" x2="62" y2="60" stroke-dasharray="2,3"/>
+          <line x1="62" y1="70" x2="62" y2="85" stroke-dasharray="2,3"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">波と雨</div>
+        <div class="pat-overlay-en">Wave and Rain</div>
+        <div class="pat-overlay-desc">立湧(たてわく)と呼ばれる波の曲線。正倉院御物にもある吉祥文様で、「運気(雲気)」が上昇するとされる。</div>
+      </div>
+    </div>
+
+    <!-- 6. 変わり市松 -->
+    <div class="pat-item reveal d2">
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 外側の市松 -->
+          <rect x="15" y="15" width="18" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="33" y="15" width="18" height="18"/>
+          <rect x="51" y="15" width="18" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="69" y="15" width="16" height="18"/>
+          <rect x="15" y="33" width="18" height="18"/>
+          <rect x="33" y="33" width="18" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="51" y="33" width="18" height="18"/>
+          <rect x="69" y="33" width="16" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="15" y="51" width="18" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="33" y="51" width="18" height="18"/>
+          <rect x="51" y="51" width="18" height="18" class="fill-ai" opacity="0.75"/>
+          <rect x="69" y="51" width="16" height="18"/>
+          <rect x="15" y="69" width="18" height="16"/>
+          <rect x="33" y="69" width="18" height="16" class="fill-ai" opacity="0.75"/>
+          <rect x="51" y="69" width="18" height="16"/>
+          <rect x="69" y="69" width="16" height="16" class="fill-ai" opacity="0.75"/>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">変わり市松</div>
+        <div class="pat-overlay-en">Varied Checkered Pattern</div>
+        <div class="pat-overlay-desc">江戸時代、歌舞伎役者・佐野川市松が広めた市松文様。上下左右途切れず続く「繁栄」「永遠」の縁起柄。</div>
+      </div>
+    </div>
+
+    <!-- 7. 角ドット -->
+    <div class="pat-item reveal">
+      <div class="pat-img">
+        <svg class="pat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 5x5 のドット配列 -->
+          <g class="fill-ai">
+            <rect x="16" y="16" width="6" height="6"/>
+            <rect x="32" y="16" width="6" height="6"/>
+            <rect x="48" y="16" width="6" height="6"/>
+            <rect x="64" y="16" width="6" height="6"/>
+            <rect x="80" y="16" width="6" height="6"/>
+            <rect x="16" y="32" width="6" height="6"/>
+            <rect x="32" y="32" width="6" height="6"/>
+            <rect x="48" y="32" width="6" height="6"/>
+            <rect x="64" y="32" width="6" height="6"/>
+            <rect x="80" y="32" width="6" height="6"/>
+            <rect x="16" y="48" width="6" height="6"/>
+            <rect x="32" y="48" width="6" height="6"/>
+            <rect x="48" y="48" width="6" height="6"/>
+            <rect x="64" y="48" width="6" height="6"/>
+            <rect x="80" y="48" width="6" height="6"/>
+            <rect x="16" y="64" width="6" height="6"/>
+            <rect x="32" y="64" width="6" height="6"/>
+            <rect x="48" y="64" width="6" height="6"/>
+            <rect x="64" y="64" width="6" height="6"/>
+            <rect x="80" y="64" width="6" height="6"/>
+            <rect x="16" y="80" width="6" height="6"/>
+            <rect x="32" y="80" width="6" height="6"/>
+            <rect x="48" y="80" width="6" height="6"/>
+            <rect x="64" y="80" width="6" height="6"/>
+            <rect x="80" y="80" width="6" height="6"/>
+          </g>
+        </svg>
+      </div>
+      <div class="pat-overlay">
+        <div class="pat-overlay-name">角ドット</div>
+        <div class="pat-overlay-en">Square Dot</div>
+        <div class="pat-overlay-desc">小さな四角が連続することで「永遠」「無限の繋がり」を表現する、定番ドット柄の四角バージョン。</div>
       </div>
     </div>
 
   </div>
-
-  <span class="patterns-more reveal">他3種類の柄はオンラインストアでご覧いただけます →</span>
 </section>
 
 
 <!-- ══════════════════
      PRODUCTS
 ══════════════════ -->
-<section class="products">
+<section class="products" id="products">
   <div class="products-header">
     <div>
       <span class="en">Products</span>
       <h2>手に取る、<br>日々のもの。</h2>
     </div>
-    <a href="#" style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;letter-spacing:.18em;color:var(--ai);text-decoration:none;border-bottom:1px solid var(--ai);padding-bottom:2px;">すべて見る</a>
   </div>
 
-  <div class="prod-grid">
+  <div class="products-hero">
+    <div class="products-hero-img" style="background:url('images/products_all.jpg') center/cover no-repeat;"></div>
+  </div>
 
-    <div class="prod-card reveal">
-      <div class="prod-img-wrap">
-        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#C8D4DC,#A0B8C8); height:100%;">
-          <div class="ph-label" style="font-size:9px;">がま口 四角</div>
-          <div class="ph-note" style="font-size:9px;">5月撮影</div>
-        </div>
-      </div>
-      <div class="prod-body">
-        <div class="prod-name">がま口 四角</div>
-        <div class="prod-pat">花と鳥 / 藍染め</div>
-        <div class="prod-price">¥18,000</div>
-      </div>
+  <div class="products-list">
+    <div class="prod-row reveal">
+      <div class="prod-row-name">がま口 四角</div>
+      <div class="prod-row-pat">変わり市松 / 藍染め</div>
+      <div class="prod-row-price">¥18,000</div>
     </div>
-
-    <div class="prod-card reveal d1">
-      <div class="prod-img-wrap">
-        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#2A4260,#1E3145); height:100%;">
-          <div class="ph-label" style="font-size:9px; color:var(--neri);">L字財布</div>
-          <div class="ph-note" style="font-size:9px; color:var(--neri);">5月撮影</div>
-        </div>
-      </div>
-      <div class="prod-body">
-        <div class="prod-name">L字ファスナー財布</div>
-        <div class="prod-pat">変わり市松 / 藍染め</div>
-        <div class="prod-price">¥22,000</div>
-      </div>
+    <div class="prod-row reveal d1">
+      <div class="prod-row-name">L字ファスナー財布</div>
+      <div class="prod-row-pat">花と鳥 / 藍染め</div>
+      <div class="prod-row-price">¥22,000</div>
     </div>
-
-    <div class="prod-card reveal d2">
-      <div class="prod-img-wrap">
-        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#D4CCB8,#B8A898); height:100%;">
-          <div class="ph-label" style="font-size:9px;">トレー</div>
-          <div class="ph-note" style="font-size:9px;">5月撮影</div>
-        </div>
-      </div>
-      <div class="prod-body">
-        <div class="prod-name">レザートレー</div>
-        <div class="prod-pat">まんまる菊 / 藍染め</div>
-        <div class="prod-price">¥12,000</div>
-      </div>
+    <div class="prod-row reveal d2">
+      <div class="prod-row-name">レザートレー</div>
+      <div class="prod-row-pat">変わり市松 / 藍染め</div>
+      <div class="prod-row-price">¥12,000</div>
     </div>
-
-    <div class="prod-card reveal d3">
-      <div class="prod-img-wrap">
-        <div class="prod-img-inner ph" style="background:linear-gradient(160deg,#A89880,#7A6858); height:100%;">
-          <div class="ph-label" style="font-size:9px; color:var(--shiro);">コインチャーム</div>
-          <div class="ph-note" style="font-size:9px; color:var(--shiro);">5月撮影</div>
-        </div>
-      </div>
-      <div class="prod-body">
-        <div class="prod-name">三角コインチャーム</div>
-        <div class="prod-pat">花のワルツ / 共革ストラップ付</div>
-        <div class="prod-price">¥6,500</div>
-      </div>
+    <div class="prod-row reveal d3">
+      <div class="prod-row-name">三角コインチャーム</div>
+      <div class="prod-row-pat">花のワルツ / 共革ストラップ付</div>
+      <div class="prod-row-price">¥6,500</div>
     </div>
-
   </div>
 </section>
 
@@ -834,10 +966,7 @@
      STORY
 ══════════════════ -->
 <div class="story">
-  <div class="story-img ph" style="min-height:500px;">
-    <div class="ph-label" style="color:rgba(240,235,224,.35); font-size:10px;">Photo — 工房</div>
-    <div class="ph-note" style="color:rgba(240,235,224,.25); font-size:10px;">工房リニューアル後の写真<br>（4/25リニューアルオープン）</div>
-  </div>
+  <div class="story-img" style="min-height:500px; background:url('images/story_kurashi.jpg') center/cover no-repeat;"></div>
   <div class="story-body">
     <div class="story-label reveal">Brand Story</div>
     <h2 class="story-h2 reveal d1">
@@ -852,7 +981,6 @@
       色褪せることなく深まる藍。<br>
       長く使えるものを、ひとつひとつ。
     </p>
-    <a class="story-link reveal d3" href="#">ブランドストーリーをすべて読む</a>
   </div>
 </div>
 
@@ -860,7 +988,7 @@
 <!-- ══════════════════
      ARTISANS
 ══════════════════ -->
-<section class="artisans">
+<section class="artisans" id="artisans">
   <div class="artisans-header reveal">
     <span>The Artisans</span>
     <h2>つくる人たちのこと。</h2>
@@ -870,33 +998,31 @@
 
     <div class="artisan reveal d1">
       <div class="artisan-photo-wrap">
-        <div class="artisan-photo ph">
-          <div class="ph-label" style="font-size:9px;">Photo<br>5月撮影</div>
-        </div>
+        <div class="artisan-photo" style="background:url('images/artisan_iizuka.jpg') center/cover no-repeat;"></div>
       </div>
       <div class="artisan-info">
         <div class="artisan-role">Katazome Artist</div>
-        <div class="artisan-name">飯塚 氏</div>
-        <div class="artisan-name-en">Iizuka</div>
+        <div class="artisan-name">飯塚 優子</div>
+        <div class="artisan-name-en">Iizuka Yuko</div>
         <div class="artisan-body">
-          花と鳥、波と雨——伝統の文様を手彫りし、藍の染液で革に命を吹き込む。工房は4月25日にリニューアルオープン。ワークショップも開催予定。
+          花と鳥、波と雨——伝統の文様を手彫りし、藍の染液で革に命を吹き込む。工房は5月にリニューアルオープン。ワークショップも開催予定。
         </div>
+        <a class="artisan-ig" href="https://www.instagram.com/puninoie/" target="_blank" rel="noopener">@puninoie</a>
       </div>
     </div>
 
     <div class="artisan reveal d2">
       <div class="artisan-photo-wrap">
-        <div class="artisan-photo ph">
-          <div class="ph-label" style="font-size:9px;">Photo<br>5月撮影</div>
-        </div>
+        <div class="artisan-photo" style="background:url('images/artisan_sato.jpg') center/cover no-repeat;"></div>
       </div>
       <div class="artisan-info">
         <div class="artisan-role">Leather Craftsman</div>
-        <div class="artisan-name">佐藤 氏</div>
-        <div class="artisan-name-en">Sato</div>
+        <div class="artisan-name">佐藤 昭浩</div>
+        <div class="artisan-name-en">Sato Akihiro</div>
         <div class="artisan-body">
           飯塚さんから届く型染めレザーを、がま口・財布・バッグへと仕立てる。細部の縫い目、口金の丸み——妥協のない手仕事が、Auruの品質を支えている。
         </div>
+        <a class="artisan-ig" href="https://www.instagram.com/vert.point/" target="_blank" rel="noopener">@vert.point</a>
       </div>
     </div>
 
@@ -907,7 +1033,7 @@
 <!-- ══════════════════
      CONTACT
 ══════════════════ -->
-<div class="contact">
+<div class="contact" id="contact">
   <span class="contact-en reveal">Contact</span>
   <h2 class="contact-h2 reveal d1">
     お問い合わせ、<br>お待ちしております。
@@ -941,9 +1067,7 @@
   <div class="footer-center">
     <p class="footer-tagline">型染めレザー — 手仕事のものを、暮らしに。</p>
     <div class="footer-links">
-      <a href="#">Instagram</a>
-      <a href="#">Online Store</a>
-      <a href="#">プライバシーポリシー</a>
+      <a href="#contact">お問い合わせ</a>
     </div>
   </div>
   <div class="footer-copy">© 2026 Auru / Vert Point</div>
