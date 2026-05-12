@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auru 下げ札デザイン v2 — 藍と紋（生成りベース）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Shippori+Mincho:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sumi: #121212;
+    --indigo: #0A1422;
+    --kinari: #F6F5F2;
+    --kinari-dark: #EDE8E0;
+    --leather: #8B5E3C;
+    --gold: #C5A059;
+    --ai-deep: #1B3A5C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #E8E4DE;
+    font-family: 'Shippori Mincho', serif;
+    color: var(--sumi);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page-header {
+    padding: 40px 40px 32px;
+    border-bottom: 1px solid #CCC5BB;
+  }
+  .page-header .eyebrow {
+    font-family: 'Marcellus', serif;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 8px;
+  }
+  .page-header h1 {
+    font-family: 'Marcellus', serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+  .page-header h1 span { color: #999; font-size: 18px; }
+  .page-header .meta {
+    font-size: 11px;
+    color: #999;
+    margin-top: 6px;
+  }
+
+  .content {
+    padding: 48px 40px;
+  }
+
+  .dir-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .dir-num {
+    font-family: 'Marcellus', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .dir-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+  .dir-subtitle {
+    font-family: 'Marcellus', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: #888;
+    margin-bottom: 20px;
+  }
+  .dir-desc {
+    font-size: 13px;
+    line-height: 2;
+    color: #555;
+    max-width: 640px;
+    margin-bottom: 32px;
+  }
+  .dir-spec {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 40px;
+    line-height: 1.8;
+  }
+  .dir-spec strong { color: #666; font-weight: 500; }
+
+  /* ---- Tag display ---- */
+  .tag-showcase {
+    display: flex;
+    gap: 64px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 56px;
+  }
+  .tag-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .tag-label {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #AAA;
+    font-family: 'Marcellus', serif;
+  }
+
+  /* String */
+  .string-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .string-knot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--leather);
+    opacity: 0.5;
+  }
+  .string {
+    width: 1px;
+    height: 36px;
+    background: var(--leather);
+    opacity: 0.4;
+  }
+
+  /* Paper texture mixin */
+  .paper-texture {
+    position: relative;
+    overflow: hidden;
+  }
+  .paper-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ---- Punch hole ---- */
+  .punch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid #CCC;
+    z-index: 2;
+  }
+
+  /* ================================ */
+  /* Main Tag — 本札（生成り）       */
+  /* ================================ */
+  .main-tag {
+    width: 190px;
+    height: 340px;
+    overflow: hidden;
+  }
+  .main-tag-front {
+    background: var(--kinari);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    box-shadow:
+      0 1px 4px rgba(0,0,0,0.06),
+      0 8px 24px rgba(0,0,0,0.04);
+  }
+  .main-tag-front .punch { border-color: #D0CBC3; }
+
+  /* Deboss simulation — ロゴの空押し表現 */
+  .main-tag-front .logo-deboss {
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .main-tag-front .logo-deboss svg path {
+    fill: var(--sumi);
+    opacity: 0.12;
+    filter: drop-shadow(0px 0.5px 0px rgba(255,255,255,0.6)) drop-shadow(0px -0.5px 0.5px rgba(0,0,0,0.15));
+  }
+  .main-tag-front .brand-name {
+    font-family: 'Marcellus', serif;
+    font-size: 26px;
+    letter-spacing: 0.28em;
+    color: var(--sumi);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+  }
+  .main-tag-front .tagline {
+    font-size: 7px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: #AAA;
+    font-family: 'Marcellus', serif;
+    position: relative;
+    z-index: 2;
+  }
+  /* 下端に金ライン — 文札とのつながり */
+  .main-tag-front .bottom-accent {
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 1.5px;
+    background: var(--gold);
+    opacity: 0.35;
+    z-index: 2;
+  }
+
+  /* 本札裏面 */
+  .main-tag-back {
+    background: var(--kinari);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 32px 18px 14px;
+    box-shadow:
+      0 1px 4px rgba(0,0,0,0.06),
+      0 8px 24px rgba(0,0,0,0.04);
+  }
+  .main-tag-back .punch { border-color: #D0CBC3; }
+
+  .back-section {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .back-section-label {
+    font-size: 6.5px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #C0B8AD;
+    font-family: 'Marcellus', serif;
+    margin-bottom: 8px;
+  }
+  .back-artisan {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+    margin-bottom: 3px;
+    font-weight: 500;
+  }
+  .back-artisan-role {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8px;
+    font-style: italic;
+    color: #AAA;
+    letter-spacing: 0.05em;
+  }
+  .back-divider {
+    width: 16px;
+    height: 1px;
+    background: #D8D3CB;
+    margin: 10px auto;
+    position: relative;
+    z-index: 2;
+  }
+  .back-care {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .back-care-text {
+    font-size: 8px;
+    line-height: 1.9;
+    color: #999;
+    letter-spacing: 0.04em;
+  }
+  .back-qr {
+    text-align: center;
+    border-top: 1px solid #EDEBE7;
+    padding-top: 8px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .back-qr-url {
+    font-family: 'Marcellus', serif;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    color: #CCC;
+  }
+
+  /* ================================ */
+  /* Sub Tag — 文札（藍色＋柄）       */
+  /* ================================ */
+  .sub-tag {
+    width: 190px;
+    height: 180px;
+    overflow: hidden;
+  }
+  .sub-tag-front {
+    background: var(--indigo);
+    color: var(--kinari);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.15),
+      0 4px 16px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  /* 藍紙のテクスチャ */
+  .sub-tag-front::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* 上端に金のライン — 本札の生成りとの切り替え */
+  .sub-tag-front .top-accent {
+    width: 100%;
+    height: 2px;
+    background: var(--gold);
+    opacity: 0.5;
+    position: relative;
+    z-index: 3;
+  }
+
+  .sub-tag-front .pattern-area {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    position: relative;
+    z-index: 2;
+  }
+  .sub-tag-front .pattern-area svg {
+    opacity: 0.15;
+  }
+  .sub-tag-front .pattern-area svg * {
+    stroke: var(--kinari) !important;
+    fill: none !important;
+  }
+  /* 市松・角ドットの rect は fill で描画 */
+  .sub-tag-front .pattern-area svg rect {
+    stroke: none !important;
+    fill: var(--kinari) !important;
+    opacity: 0.15 !important;
+  }
+
+  .sub-tag-front .pattern-info {
+    padding: 0 14px 12px;
+    position: relative;
+    z-index: 2;
+  }
+  .sub-tag-front .pattern-jp {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    margin-bottom: 3px;
+    text-align: center;
+    color: var(--kinari);
+  }
+  .sub-tag-front .pattern-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px;
+    font-style: italic;
+    color: rgba(246,245,242,0.45);
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .sub-tag-front .pattern-story {
+    font-size: 8.5px;
+    line-height: 1.8;
+    color: rgba(246,245,242,0.6);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  /* ========================= */
+  /* Combined (on product sim) */
+  /* ========================= */
+  .product-sim {
+    margin-top: 20px;
+    padding: 48px 0;
+    border-top: 1px solid #CCC5BB;
+  }
+  .sim-title {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #AAA;
+    font-family: 'Marcellus', serif;
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .product-context {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .product-block {
+    width: 280px;
+    height: 180px;
+    background: var(--ai-deep);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.3),
+      0 4px 20px rgba(0,0,0,0.15);
+  }
+  .product-block::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .product-label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-size: 8px;
+    color: rgba(255,255,255,0.25);
+    font-family: 'Marcellus', serif;
+    letter-spacing: 0.15em;
+  }
+
+  .hanging-tags {
+    position: relative;
+    margin-left: -24px;
+    margin-top: 20px;
+  }
+  .mini-main {
+    width: 76px;
+    height: 124px;
+    background: var(--kinari);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .mini-main .mini-punch {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    border: 0.5px solid #CCC;
+  }
+  .mini-main .mini-logo {
+    margin-bottom: 4px;
+  }
+  .mini-main .mini-brand {
+    font-family: 'Marcellus', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--sumi);
+  }
+  .mini-main .mini-tagline {
+    font-family: 'Marcellus', serif;
+    font-size: 4px;
+    letter-spacing: 0.35em;
+    color: #BBB;
+    text-transform: uppercase;
+  }
+  .mini-main .mini-accent {
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.3;
+  }
+
+  .mini-stack {
+    position: relative;
+    width: 76px;
+    height: 150px;
+  }
+  .mini-sub-behind {
+    position: absolute;
+    bottom: 0;
+    left: 3px;
+    width: 76px;
+    height: 60px;
+    background: var(--indigo);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 6px;
+    z-index: 1;
+  }
+  .mini-sub-behind .mini-top-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.4;
+  }
+  .mini-sub-behind .mini-pattern-name {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    color: var(--kinari);
+  }
+  .mini-sub-behind .mini-pattern-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5px;
+    font-style: italic;
+    color: rgba(246,245,242,0.4);
+  }
+  .mini-stack .mini-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+  }
+
+  .mini-string {
+    width: 1px;
+    height: 24px;
+    background: var(--leather);
+    opacity: 0.3;
+    margin: 0 auto;
+  }
+  .mini-knot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--leather);
+    opacity: 0.4;
+    margin: 0 auto;
+  }
+
+  /* ---- Pattern tabs ---- */
+  .pattern-nav {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  .pattern-btn {
+    padding: 10px 16px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #888;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Shippori Mincho', serif;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+  }
+  .pattern-btn:hover { color: var(--sumi); }
+  .pattern-btn.active {
+    color: var(--sumi);
+    border-bottom-color: var(--ai-deep);
+  }
+
+  .section-divider {
+    text-align: center;
+    margin: 48px 0 32px;
+  }
+  .section-divider span {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #BBB;
+    font-family: 'Marcellus', serif;
+  }
+
+  @media (max-width: 640px) {
+    .page-header, .content { padding: 24px 20px; }
+    .tag-showcase { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">Meguriwa × Obadai — Hang Tag Design</div>
+  <h1>Auru 下げ札 <span>v2 — 藍と紋（生成りベース）</span></h1>
+  <div class="meta">2026-05-12 — 本札（生成り）＋文札（藍色）の二枚組 / 生成り×藍のコントラスト</div>
+</div>
+
+<div class="content">
+
+  <div class="dir-header">
+    <span class="dir-num">Direction 02 Rev.</span>
+    <span class="dir-title">藍と紋</span>
+  </div>
+  <div class="dir-subtitle">Ai to Mon — Indigo and Crest</div>
+  <div class="dir-desc">
+    生成りの本札＋藍色の文札、二枚組。上の本札にブランド（空押しロゴ＋墨の活版）、下の文札に柄名と物語。<br>
+    本札の生成りと文札の藍色のコントラスト。藍革の商品に対して本札が映え、文札が革の色と呼応する。<br>
+    二枚の境目に金のラインが入り、一組であることを示す。
+  </div>
+  <div class="dir-spec">
+    <strong>想定サイズ:</strong> 本札 52×80mm / 文札 52×56mm<br>
+    <strong>素材:</strong> 本札＝コットンペーパー（アラベール ナチュラル）350gsm / 文札＝特殊紙（特ナンドF 藍色系）300gsm<br>
+    <strong>加工:</strong> 本札：ロゴ空押し＋活版1色（墨）/ 文札：活版1色（生成り or 白）＋金ライン<br>
+    <strong>取り付け:</strong> 蝋引き麻紐で二枚を結束<br>
+    <strong>印刷想定コスト:</strong> @120〜160円（500部〜、7柄展開の場合）
+  </div>
+
+  <!-- Pattern selector -->
+  <div class="pattern-nav" id="patternNav">
+    <button class="pattern-btn active" onclick="setPattern(0)">花と鳥</button>
+    <button class="pattern-btn" onclick="setPattern(1)">模様合わせ</button>
+    <button class="pattern-btn" onclick="setPattern(2)">花のワルツ</button>
+    <button class="pattern-btn" onclick="setPattern(3)">まんまる菊</button>
+    <button class="pattern-btn" onclick="setPattern(4)">波と雨</button>
+    <button class="pattern-btn" onclick="setPattern(5)">変わり市松</button>
+    <button class="pattern-btn" onclick="setPattern(6)">角ドット</button>
+  </div>
+
+  <!-- Main display -->
+  <div class="tag-showcase">
+
+    <!-- Front -->
+    <div class="tag-unit">
+      <div class="string-wrap">
+        <div class="string-knot"></div>
+        <div class="string"></div>
+      </div>
+      <div class="main-tag main-tag-front paper-texture">
+        <div class="punch"></div>
+        <div class="logo-deboss">
+          <svg width="52" height="52" viewBox="0 0 100 100" fill="none">
+            <path d="M35 15 L45 18 L32 90 L18 80 Z"/>
+            <path d="M52 25 C 55 25, 80 45, 75 90 L 68 88 C 72 45, 52 35, 52 25 Z"/>
+          </svg>
+        </div>
+        <div class="brand-name">Auru</div>
+        <div class="tagline">Katagami Leather</div>
+        <div class="bottom-accent"></div>
+      </div>
+      <div style="height: 3px;"></div>
+      <div class="sub-tag sub-tag-front paper-texture">
+        <div class="top-accent"></div>
+        <div class="pattern-area" id="patternSvg">
+          <!-- injected -->
+        </div>
+        <div class="pattern-info">
+          <div class="pattern-jp" id="patternJp">花と鳥</div>
+          <div class="pattern-en" id="patternEn">Flowers and Birds</div>
+          <div class="pattern-story" id="patternStory">花は生命力と神聖さ、鳥は創造性と自由の象徴。「鳥」と「とりこむ」の語呂合わせで、幸運を取り込む縁起柄。</div>
+        </div>
+      </div>
+      <div class="tag-label">表 — Omote</div>
+    </div>
+
+    <!-- Back -->
+    <div class="tag-unit">
+      <div class="string-wrap">
+        <div class="string-knot"></div>
+        <div class="string"></div>
+      </div>
+      <div class="main-tag main-tag-back paper-texture">
+        <div class="punch"></div>
+        <div class="back-section" style="margin-top: 4px;">
+          <div class="back-section-label">The Artisans</div>
+          <div class="back-artisan">佐藤 昭浩</div>
+          <div class="back-artisan-role">Leather Craft — Vert Point, Tokyo</div>
+          <div style="height: 6px;"></div>
+          <div class="back-artisan">飯塚 優子</div>
+          <div class="back-artisan-role">Katazome — Puni no Ie, Tsukuba</div>
+        </div>
+        <div class="back-divider"></div>
+        <div class="back-care">
+          <div class="back-section-label">Care</div>
+          <div class="back-care-text">
+            直射日光・高温多湿を避けて保管<br>
+            濡れた場合は陰干しで自然乾燥<br>
+            使い込むほど藍の深みが増します
+          </div>
+        </div>
+        <div class="back-divider"></div>
+        <div class="back-qr">
+          <svg width="38" height="38" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:2;">
+            <!-- QR code placeholder for auru.jp -->
+            <!-- Finder patterns (3 corners) -->
+            <rect x="0" y="0" width="7" height="7" fill="#C0B8AD"/>
+            <rect x="1" y="1" width="5" height="5" fill="var(--kinari)"/>
+            <rect x="2" y="2" width="3" height="3" fill="#C0B8AD"/>
+            <rect x="26" y="0" width="7" height="7" fill="#C0B8AD"/>
+            <rect x="27" y="1" width="5" height="5" fill="var(--kinari)"/>
+            <rect x="28" y="2" width="3" height="3" fill="#C0B8AD"/>
+            <rect x="0" y="26" width="7" height="7" fill="#C0B8AD"/>
+            <rect x="1" y="27" width="5" height="5" fill="var(--kinari)"/>
+            <rect x="2" y="28" width="3" height="3" fill="#C0B8AD"/>
+            <!-- Data modules (simplified pattern) -->
+            <rect x="8" y="0" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="0" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="12" y="0" width="1" height="1" fill="#C0B8AD"/><rect x="9" y="1" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="11" y="1" width="1" height="1" fill="#C0B8AD"/><rect x="8" y="2" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="10" y="2" width="1" height="1" fill="#C0B8AD"/><rect x="12" y="3" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="9" y="4" width="1" height="1" fill="#C0B8AD"/><rect x="11" y="4" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="8" y="5" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="5" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="12" y="6" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Timing -->
+            <rect x="6" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="6" y="10" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="6" y="12" width="1" height="1" fill="#C0B8AD"/><rect x="8" y="6" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="10" y="6" width="1" height="1" fill="#C0B8AD"/><rect x="12" y="6" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Middle area -->
+            <rect x="8" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="12" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="9" y="10" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="11" y="11" width="1" height="1" fill="#C0B8AD"/><rect x="8" y="12" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="13" y="9" width="1" height="1" fill="#C0B8AD"/><rect x="14" y="10" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="15" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="16" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="15" y="11" width="1" height="1" fill="#C0B8AD"/><rect x="17" y="10" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="14" y="12" width="1" height="1" fill="#C0B8AD"/><rect x="16" y="12" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Right side -->
+            <rect x="26" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="28" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="27" y="10" width="1" height="1" fill="#C0B8AD"/><rect x="29" y="11" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="26" y="12" width="1" height="1" fill="#C0B8AD"/><rect x="30" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="31" y="10" width="1" height="1" fill="#C0B8AD"/>
+            <!-- More data -->
+            <rect x="18" y="8" width="1" height="1" fill="#C0B8AD"/><rect x="20" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="19" y="11" width="1" height="1" fill="#C0B8AD"/><rect x="21" y="8" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="22" y="10" width="1" height="1" fill="#C0B8AD"/><rect x="24" y="9" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="23" y="11" width="1" height="1" fill="#C0B8AD"/><rect x="20" y="12" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Bottom rows -->
+            <rect x="8" y="14" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="15" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="9" y="16" width="1" height="1" fill="#C0B8AD"/><rect x="12" y="14" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="14" y="15" width="1" height="1" fill="#C0B8AD"/><rect x="16" y="14" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="11" y="16" width="1" height="1" fill="#C0B8AD"/><rect x="13" y="17" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="15" y="16" width="1" height="1" fill="#C0B8AD"/><rect x="17" y="15" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="18" y="14" width="1" height="1" fill="#C0B8AD"/><rect x="20" y="16" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="22" y="15" width="1" height="1" fill="#C0B8AD"/><rect x="24" y="14" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="26" y="15" width="1" height="1" fill="#C0B8AD"/><rect x="28" y="16" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="30" y="14" width="1" height="1" fill="#C0B8AD"/><rect x="32" y="15" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Bottom data -->
+            <rect x="8" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="19" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="12" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="9" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="14" y="19" width="1" height="1" fill="#C0B8AD"/><rect x="16" y="18" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="11" y="20" width="1" height="1" fill="#C0B8AD"/><rect x="18" y="19" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="20" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="22" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="24" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="13" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="15" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Right bottom -->
+            <rect x="26" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="28" y="19" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="30" y="18" width="1" height="1" fill="#C0B8AD"/><rect x="27" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="29" y="20" width="1" height="1" fill="#C0B8AD"/><rect x="31" y="19" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="32" y="20" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Bottom-right area -->
+            <rect x="8" y="26" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="27" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="9" y="28" width="1" height="1" fill="#C0B8AD"/><rect x="12" y="26" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="11" y="28" width="1" height="1" fill="#C0B8AD"/><rect x="14" y="27" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="16" y="26" width="1" height="1" fill="#C0B8AD"/><rect x="13" y="29" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="18" y="27" width="1" height="1" fill="#C0B8AD"/><rect x="20" y="26" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="22" y="28" width="1" height="1" fill="#C0B8AD"/><rect x="24" y="27" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="8" y="30" width="1" height="1" fill="#C0B8AD"/><rect x="10" y="31" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="12" y="30" width="1" height="1" fill="#C0B8AD"/><rect x="14" y="31" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="26" y="26" width="1" height="1" fill="#C0B8AD"/><rect x="28" y="27" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="30" y="26" width="1" height="1" fill="#C0B8AD"/><rect x="27" y="29" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="29" y="28" width="1" height="1" fill="#C0B8AD"/><rect x="31" y="27" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="26" y="30" width="1" height="1" fill="#C0B8AD"/><rect x="28" y="31" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="32" y="28" width="1" height="1" fill="#C0B8AD"/><rect x="30" y="30" width="1" height="1" fill="#C0B8AD"/>
+            <rect x="32" y="32" width="1" height="1" fill="#C0B8AD"/>
+            <!-- Alignment pattern -->
+            <rect x="21" y="21" width="5" height="5" fill="#C0B8AD"/>
+            <rect x="22" y="22" width="3" height="3" fill="var(--kinari)"/>
+            <rect x="23" y="23" width="1" height="1" fill="#C0B8AD"/>
+          </svg>
+          <div class="back-qr-url">auru.jp</div>
+        </div>
+      </div>
+      <div class="tag-label">裏 — Ura</div>
+    </div>
+
+  </div>
+
+  <!-- Product context simulation -->
+  <div class="product-sim">
+    <div class="sim-title">On Product — 藍革の上での見え方</div>
+    <div class="product-context">
+      <div class="product-block">
+        <div class="product-label">Aizome Leather — Gamakuchi</div>
+      </div>
+      <div class="hanging-tags">
+        <div class="mini-knot"></div>
+        <div class="mini-string"></div>
+        <div class="mini-stack">
+          <!-- Sub tag (indigo) behind, peeking out bottom -->
+          <div class="mini-sub-behind">
+            <div class="mini-top-accent"></div>
+            <div class="mini-pattern-name" id="miniPatternName">花と鳥</div>
+            <div class="mini-pattern-en" id="miniPatternEn">Flowers and Birds</div>
+          </div>
+          <!-- Main tag (kinari) on top -->
+          <div class="mini-main">
+            <div class="mini-punch"></div>
+            <div class="mini-logo">
+              <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+                <path d="M35 15 L45 18 L32 90 L18 80 Z" fill="#121212" opacity="0.12"/>
+                <path d="M52 25 C 55 25, 80 45, 75 90 L 68 88 C 72 45, 52 35, 52 25 Z" fill="#121212" opacity="0.12"/>
+              </svg>
+            </div>
+            <div class="mini-brand">Auru</div>
+            <div class="mini-tagline">Katagami Leather</div>
+            <div class="mini-accent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const patterns = [
+  {
+    jp: "花と鳥", en: "Flowers and Birds",
+    story: "花は生命力と神聖さ、鳥は創造性と自由の象徴。「鳥」と「とりこむ」の語呂合わせで、幸運を取り込む縁起柄。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="25" cy="25" r="14" stroke="#121212" stroke-width="0.6"/>
+      <circle cx="25" cy="25" r="6" stroke="#121212" stroke-width="0.4"/>
+      <path d="M55 15 Q 70 10, 80 25 Q 90 40, 75 50" stroke="#121212" stroke-width="0.6" fill="none"/>
+      <circle cx="80" cy="22" r="2" fill="#121212" opacity="0.3"/>
+      <path d="M45 45 Q 55 35, 65 45 Q 75 55, 60 58" stroke="#121212" stroke-width="0.5" fill="none"/>
+      <circle cx="48" cy="50" r="5" stroke="#121212" stroke-width="0.4"/>
+    </svg>`
+  },
+  {
+    jp: "模様合わせ", en: "Pattern Matching",
+    story: "自然をモチーフにした伝統文様を集めた異国情緒のある柄。沖縄の紅型にも通じる、神秘的な美しさ。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="25" height="25" stroke="#121212" stroke-width="0.5" transform="rotate(5 22 22)"/>
+      <circle cx="55" cy="35" r="15" stroke="#121212" stroke-width="0.5"/>
+      <polygon points="85,12 95,32 75,32" stroke="#121212" stroke-width="0.5" fill="none"/>
+      <path d="M30 50 L50 45 L70 55 L90 48" stroke="#121212" stroke-width="0.4" fill="none"/>
+    </svg>`
+  },
+  {
+    jp: "花のワルツ", en: "Waltz of the Flowers",
+    story: "蔓は繁栄と子孫繁栄の象徴。絡み合いながら伸びる姿は、人と人との「縁」が長く続いていくことを表す。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15 55 Q 30 20, 55 35 Q 80 50, 95 15" stroke="#121212" stroke-width="0.6" fill="none"/>
+      <circle cx="35" cy="28" r="6" stroke="#121212" stroke-width="0.4"/>
+      <circle cx="68" cy="38" r="8" stroke="#121212" stroke-width="0.4"/>
+      <path d="M40 50 Q 48 42, 58 48" stroke="#121212" stroke-width="0.3" fill="none"/>
+      <path d="M70 22 Q 78 18, 82 26" stroke="#121212" stroke-width="0.3" fill="none"/>
+    </svg>`
+  },
+  {
+    jp: "まんまる菊", en: "Round Chrysanthemums",
+    story: "皇室の紋章にも使われ「信頼」「高貴さ」を意味する菊。薬効と美しさから「不老長寿」の象徴でもある。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="35" cy="35" r="18" stroke="#121212" stroke-width="0.5"/>
+      <circle cx="35" cy="35" r="12" stroke="#121212" stroke-width="0.4"/>
+      <circle cx="35" cy="35" r="6" stroke="#121212" stroke-width="0.4"/>
+      <circle cx="35" cy="35" r="2" fill="#121212" opacity="0.2"/>
+      <circle cx="75" cy="35" r="14" stroke="#121212" stroke-width="0.5"/>
+      <circle cx="75" cy="35" r="8" stroke="#121212" stroke-width="0.4"/>
+      <circle cx="75" cy="35" r="3" fill="#121212" opacity="0.15"/>
+    </svg>`
+  },
+  {
+    jp: "波と雨", en: "Wave and Rain",
+    story: "立湧（たてわく）と呼ばれる波の曲線。正倉院御物にもある吉祥文様で、「運気（雲気）」が上昇するとされる。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 50 Q 30 20, 55 35 Q 80 50, 100 20" stroke="#121212" stroke-width="0.5" fill="none"/>
+      <path d="M10 60 Q 30 30, 55 45 Q 80 60, 100 30" stroke="#121212" stroke-width="0.4" fill="none"/>
+      <line x1="25" y1="8" x2="25" y2="18" stroke="#121212" stroke-width="0.3"/>
+      <line x1="45" y1="5" x2="45" y2="15" stroke="#121212" stroke-width="0.3"/>
+      <line x1="65" y1="10" x2="65" y2="20" stroke="#121212" stroke-width="0.3"/>
+      <line x1="85" y1="6" x2="85" y2="16" stroke="#121212" stroke-width="0.3"/>
+    </svg>`
+  },
+  {
+    jp: "変わり市松", en: "Varied Checkered",
+    story: "江戸時代、歌舞伎役者・佐野川市松が広めた市松文様。上下左右途切れず続く「繁栄」「永遠」の縁起柄。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="10" width="12" height="12" fill="#121212" opacity="0.15"/>
+      <rect x="39" y="10" width="12" height="12" fill="#121212" opacity="0.15"/>
+      <rect x="63" y="10" width="12" height="12" fill="#121212" opacity="0.15"/>
+      <rect x="27" y="22" width="12" height="12" fill="#121212" opacity="0.12"/>
+      <rect x="51" y="22" width="12" height="12" fill="#121212" opacity="0.12"/>
+      <rect x="75" y="22" width="12" height="12" fill="#121212" opacity="0.12"/>
+      <rect x="15" y="34" width="12" height="12" fill="#121212" opacity="0.1"/>
+      <rect x="39" y="34" width="12" height="12" fill="#121212" opacity="0.1"/>
+      <rect x="63" y="34" width="12" height="12" fill="#121212" opacity="0.1"/>
+      <rect x="27" y="46" width="12" height="12" fill="#121212" opacity="0.08"/>
+      <rect x="51" y="46" width="12" height="12" fill="#121212" opacity="0.08"/>
+    </svg>`
+  },
+  {
+    jp: "角ドット", en: "Square Dot",
+    story: "小さな四角が連続することで「永遠」「無限の繋がり」を表現する、定番ドット柄の四角バージョン。",
+    svg: `<svg width="110" height="70" viewBox="0 0 110 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="15" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="28" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="41" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="54" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="67" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="80" y="12" width="5" height="5" fill="#121212" opacity="0.15"/>
+      <rect x="21" y="24" width="5" height="5" fill="#121212" opacity="0.12"/>
+      <rect x="34" y="24" width="5" height="5" fill="#121212" opacity="0.12"/>
+      <rect x="47" y="24" width="5" height="5" fill="#121212" opacity="0.12"/>
+      <rect x="60" y="24" width="5" height="5" fill="#121212" opacity="0.12"/>
+      <rect x="73" y="24" width="5" height="5" fill="#121212" opacity="0.12"/>
+      <rect x="15" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="28" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="41" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="54" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="67" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="80" y="36" width="5" height="5" fill="#121212" opacity="0.1"/>
+      <rect x="21" y="48" width="5" height="5" fill="#121212" opacity="0.08"/>
+      <rect x="34" y="48" width="5" height="5" fill="#121212" opacity="0.08"/>
+      <rect x="47" y="48" width="5" height="5" fill="#121212" opacity="0.08"/>
+      <rect x="60" y="48" width="5" height="5" fill="#121212" opacity="0.08"/>
+      <rect x="73" y="48" width="5" height="5" fill="#121212" opacity="0.08"/>
+    </svg>`
+  }
+];
+
+let currentPattern = 0;
+
+function setPattern(idx) {
+  currentPattern = idx;
+  const p = patterns[idx];
+
+  document.getElementById('patternJp').textContent = p.jp;
+  document.getElementById('patternEn').textContent = p.en;
+  document.getElementById('patternStory').textContent = p.story;
+  document.getElementById('patternSvg').innerHTML = p.svg;
+  document.getElementById('miniPatternName').textContent = p.jp;
+  document.getElementById('miniPatternEn').textContent = p.en;
+
+  document.querySelectorAll('.pattern-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === idx);
+  });
+}
+
+// Initialize
+setPattern(0);
+</script>
+
+</body>
+</html>
